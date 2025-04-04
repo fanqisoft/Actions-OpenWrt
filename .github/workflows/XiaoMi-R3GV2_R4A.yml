@@ -97,7 +97,7 @@ jobs:
       if: github.event.inputs.pinpin == 'true'
       working-directory: /workdir
       run: |
-        git clone $PINPIN_REPO_URL -b $REPO_BRANCH pinpin
+        git clone $PINPIN_REPO_URL -b main pinpin
         ln -sf /workdir/pinpin $GITHUB_WORKSPACE/pinpin
         cd pinpin
         cp -r autokick-wiwiz openwrt/package/
