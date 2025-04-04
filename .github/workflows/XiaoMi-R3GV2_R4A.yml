@@ -15,12 +15,12 @@ on:
   workflow_dispatch:
     inputs:
       clash:
-        description: 'Not build clash'
+        description: 'build clash'
         required: true
         default: false
         type: boolean
       pinpin:
-        description: 'Not build pinpinWifi'
+        description: 'build pinpinWifi'
         required: true
         default: false
         type: boolean
