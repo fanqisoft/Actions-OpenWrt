@@ -98,12 +98,11 @@ jobs:
       working-directory: /workdir
       run: |
         git clone $PINPIN_REPO_URL -b main pinpin
-        ln -sf /workdir/pinpin $GITHUB_WORKSPACE/pinpin
         cd pinpin
-        cp -r autokick-wiwiz openwrt/package/
-        cp -r dcc2-wiwiz openwrt/package/
-        cp -r eqos-master-wiwiz openwrt/package/
-        cp -r wifidog-wiwiz openwrt/package/
+        cp -r autokick-wiwiz /workdir/openwrt/package/
+        cp -r dcc2-wiwiz /workdir/openwrt/package/
+        cp -r eqos-master-wiwiz /workdir/openwrt/package/
+        cp -r wifidog-wiwiz /workdir/openwrt/package/
 
     - name: 加载feeds.conf.default & DIY_P1_SH
       run: |
