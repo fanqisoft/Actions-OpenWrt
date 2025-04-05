@@ -93,17 +93,6 @@ jobs:
         git clone $REPO_URL -b $REPO_BRANCH openwrt
         ln -sf /workdir/openwrt $GITHUB_WORKSPACE/openwrt
 
-    - name: 加载拼拼WIFI插件
-      if: github.event.inputs.pinpin == 'true'
-      working-directory: /workdir
-      run: |
-        git clone $PINPIN_REPO_URL -b main pinpin
-        cd pinpin
-        cp -r autokick-wiwiz /workdir/openwrt/package/
-        cp -r dcc2-wiwiz /workdir/openwrt/package/
-        cp -r eqos-master-wiwiz /workdir/openwrt/package/
-        cp -r wifidog-wiwiz /workdir/openwrt/package/
-
     - name: 加载feeds.conf.default & DIY_P1_SH
       run: |
         [ -e $FEEDS_CONF ] && mv $FEEDS_CONF openwrt/feeds.conf.default
@@ -122,6 +111,27 @@ jobs:
     - name: 加载config
       run: |
         [ -e $CONFIG_FILE ] && mv $CONFIG_FILE openwrt/.config
+        if [ ${{ github.event.inputs.pinpin }} == 'false' ]; then
+                cd openwrt
+                sed -i '/CONFIG_PACKAGE_autokick-wiwiz=y/d' .config
+                sed -i '/CONFIG_PACKAGE_eqos=y/d' .config
+                sed -i '/CONFIG_PACKAGE_luci-app-eqos=y/d' .config
+                sed -i '/CONFIG_PACKAGE_wifidog-wiwiz=y/d' .config
+                sed -i '/CONFIG_PACKAGE_dcc2-wiwiz-nossl=y/d' .config
+        else
+                echo "pinpin==true"
+        fi
+
+    - name: 加载拼拼WIFI插件
+      if: github.event.inputs.pinpin == 'true'
+      working-directory: /workdir
+      run: |
+        git clone $PINPIN_REPO_URL -b main pinpin
+        cd pinpin
+        cp -r autokick-wiwiz /workdir/openwrt/package/
+        cp -r dcc2-wiwiz /workdir/openwrt/package/
+        cp -r eqos-master-wiwiz /workdir/openwrt/package/
+        cp -r wifidog-wiwiz /workdir/openwrt/package/
 
     - name: 加载DIY_P2_SH
       if: github.event.inputs.clash == 'true'
@@ -191,6 +201,16 @@ jobs:
         touch release.txt
         echo "- 使用源码：${{ env.REPO_URL }}" >> release.txt
         echo "- 登录地址：${{ env.IP_ADDR }}" >> release.txt
+        if [ ${{ github.event.inputs.pinpin }} == 'true' ]; then
+                echo "- 已编译拼拼WIFI插件" >> release.txt
+        else
+                echo "- 未编译拼拼WIFI插件" >> release.txt
+        fi
+        if [ ${{ github.event.inputs.clash }} == 'true' ]; then
+                echo "- 已编译clash" >> release.txt
+        else
+                echo "- 未编译clash" >> release.txt
+        fi
         echo "release_tag=${{ env.FILE_DATE }}-${{ env.OPENWRT_NAME }}-${{ env.UPLOAD_TAG_NAME }}${{ env.BUILD_DOCKERMAN }}" >> $GITHUB_OUTPUT
         echo "status=success" >> $GITHUB_OUTPUT
 
